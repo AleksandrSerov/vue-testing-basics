@@ -9,7 +9,7 @@ describe("App.vue", () => {
   beforeEach(() => {
     wrapper = shallowMount(App);
   });
-  it("should render correct contents", () => {
+  it("Отображается корректный контент", () => {
     expect(wrapper.html()).to.contain("<th>Items</th>");
     expect(wrapper.html()).to.contain(
       '<input type="text" placeholder="Add item..." value="" class="prompt">'
@@ -22,12 +22,12 @@ describe("App.vue", () => {
     );
   });
 
-  it("should set correct default data", () => {
+  it("Установка корректный стандартных данных", () => {
     expect(wrapper.vm.item).to.equal("");
     expect(wrapper.vm.items).to.deep.equal([]);
   });
 
-  it('should have the "Add" button disabled', () => {
+  it('Кнопка "Add" по умолчанию неактивна', () => {
     const addItemButton = wrapper.find(".ui.button");
     expect(addItemButton.element.disabled).to.be.true;
   });
@@ -41,9 +41,42 @@ describe("App.vue", () => {
     it("Должен обновиться текст ", () => {
       expect(wrapper.vm.item).to.equal("New Item");
     });
-    it('should enable the "Add" button when text input is populated', () => {
+    it('Когда был введен текст в инпут, кнопка "Add" должна стать активной', () => {
       const addItemButton = wrapper.find(".ui.button");
       expect(addItemButton.element.disabled).to.be.false;
+    });
+    describe("Затем очищает текст в поле", () => {
+      it('Кнопка "Add" должна блокироваться', () => {
+        const addItemButton = wrapper.find(".ui.button");
+        inputField.element.value = "";
+        inputField.trigger("input");
+        expect(addItemButton.element.disabled).to.be.true;
+      });
+    });
+    describe("Затем отправляет форму", () => {
+      let addItemButton;
+      let itemList;
+      let inputField;
+
+      beforeEach(() => {
+        itemList = wrapper.find(".item-list");
+        inputField = wrapper.find("input");
+        addItemButton = wrapper.find(".ui.button");
+
+        addItemButton.trigger("submit");
+        wrapper.setData({ item: "New Item" });
+      });
+      it('Должен добавиться новый элемент в "items"', () => {
+        expect(wrapper.vm.items).to.contain("New Item");
+        expect(itemList.html()).to.contain("<td>New Item</td>");
+      });
+      it('Значение в "item" должно стать пустой строкой', () => {
+        expect(wrapper.vm.item).to.equal("");
+        expect(inputField.element.value).to.equal("");
+      });
+      it('Кнопка "Add" должна блокироваться', () => {
+        expect(addItemButton.element.disabled).to.be.true;
+      });
     });
   });
 });
