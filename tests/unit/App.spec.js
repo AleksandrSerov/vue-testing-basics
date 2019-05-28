@@ -59,24 +59,47 @@ describe("App.vue", () => {
       let inputField;
 
       beforeEach(() => {
+        addItemButton = wrapper.find(".ui.button");
         itemList = wrapper.find(".item-list");
         inputField = wrapper.find("input");
-        addItemButton = wrapper.find(".ui.button");
 
-        addItemButton.trigger("submit");
         wrapper.setData({ item: "New Item" });
+        addItemButton.trigger("submit");
       });
+
       it('Должен добавиться новый элемент в "items"', () => {
         expect(wrapper.vm.items).to.contain("New Item");
         expect(itemList.html()).to.contain("<td>New Item</td>");
       });
+
       it('Значение в "item" должно стать пустой строкой', () => {
         expect(wrapper.vm.item).to.equal("");
         expect(inputField.element.value).to.equal("");
       });
+
       it('Кнопка "Add" должна блокироваться', () => {
         expect(addItemButton.element.disabled).to.be.true;
       });
+    });
+  });
+
+  describe("Пользователь кликает на кнопку 'Remove all'", () => {
+    let itemList;
+    let removeItemsLabel;
+    beforeEach(() => {
+      itemList = wrapper.find(".item-list");
+      removeItemsLabel = wrapper.find(".ui.label");
+
+      wrapper.setData({ items: ["Item #1", "Item #2", "Item #3"] });
+    });
+
+    it('Должны удаляться все элементы из "items"', () => {
+      removeItemsLabel.trigger("click");
+
+      expect(wrapper.vm.items).to.deep.equal([]);
+      expect(itemList.html()).to.not.contain("<td>Item #1</td>");
+      expect(itemList.html()).to.not.contain("<td>Item #2</td>");
+      expect(itemList.html()).to.not.contain("<td>Item #3</td>");
     });
   });
 });
